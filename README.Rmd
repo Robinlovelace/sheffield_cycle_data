@@ -6,6 +6,7 @@ output: github_document
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
+  cache = TRUE,
   collapse = TRUE,
   comment = "#>"
 )
@@ -16,20 +17,51 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of sheffield_cycle_data is to ...
+The goal of sheffield_cycle_data is to get started with key datasets on cycling, infrastructure, behaviour and maybe more.
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+## Set-up and packages
 
-```{r cars}
-summary(cars)
+There are a number of packages that can help get transport (including cycling) data.
+Install them as follows:
+
+```{r}
+install.packages("remotes")
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/v1/examples>.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
+```{r}
+remotes::install_cran(c("pct", "osmextract", "osmdata", "stats19", "tidyverse"))
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub.
+You can load them as follows:
+
+```{r}
+library(pct)
+library(stats19)
+library(tidyverse)
+```
+
+## Cycling behaviour and potential
+
+```{r}
+cycle_trips_network_estimates = get_pct_rnet(region = "south-yorkshire")
+zones = get_pct_zones("south-yorkshire")
+```
+
+You can plot this data in a static map as follows:
+
+```{r, out.width="50%", fig.show='hold'}
+zones %>% 
+  select(lad_name) %>% 
+  plot()
+cycle_trips_network_estimates %>%
+  select(dutch_slc) %>% 
+  plot()
+```
+
+Let's subset the data representing Sheffield.
+
+```{r}
+zones_sheffield = zones %>% 
+  filter(lad_name == "Sheffield")
+```
+
