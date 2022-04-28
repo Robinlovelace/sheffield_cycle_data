@@ -29,7 +29,7 @@ install.packages("remotes")
 ```
 
 ```{r}
-remotes::install_cran(c("pct", "osmextract", "osmdata", "stats19", "tidyverse"))
+remotes::install_cran(c("pct", "osmextract", "osmdata", "stats19", "tidyverse", "tmap", "skimr"))
 ```
 
 You can load them as follows:
@@ -38,11 +38,15 @@ You can load them as follows:
 library(pct)
 library(stats19)
 library(tidyverse)
+library(tmap)
+# tmap_mode("view") # uncomment this for interactive maps
+tmap_mode("plot")
 ```
 
 ## Cycling behaviour and potential
 
 ```{r}
+# https://github.com/npct/pct-outputs-regional-notR/blob/master/commute/lsoa/south-yorkshire/rnet_full.geojson
 cycle_trips_network_estimates = get_pct_rnet(region = "south-yorkshire")
 zones = get_pct_zones("south-yorkshire")
 ```
@@ -64,4 +68,39 @@ Let's subset the data representing Sheffield.
 zones_sheffield = zones %>% 
   filter(lad_name == "Sheffield")
 ```
+
+```{r}
+rnet_sheffield = cycle_trips_network_estimates[zones_sheffield, ]
+```
+
+```{r}
+rnet_sheffield %>% 
+  tm_shape() +
+  tm_lines(lwd = "ebike_slc", scale = 9)
+
+```
+
+## Getting the infrastructure data
+
+```{r}
+extra_tags = c("maxspeed", "bicycle")
+osm_data_region = osmextract::oe_get_network(place = "south yorkshire", mode = "cycling", extra_tags = extra_tags)
+osm_sheffield = osm_data_region[zones_sheffield, ]
+```
+
+```{r}
+osm_sheffield %>% 
+  sf::st_drop_geometry() %>% 
+  skimr::skim()
+```
+
+```{r}
+osm_cycleways = osm_sheffield %>% 
+  filter(highway == "cycleway")
+```
+
+```{r}
+qtm(osm_cycleways)
+```
+
 
