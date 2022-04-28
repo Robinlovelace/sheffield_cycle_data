@@ -165,3 +165,20 @@ qtm(osm_cycleways)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+To save the output you can use the `st_write()` function from the **sf**
+package:
+
+``` r
+sf::st_write(obj = osm_cycleways, "osm_cycleways.geojson")
+```
+
+You can then load the object in QGIS.
+
+## Next steps
+
+-   Check out the stats19 R package, search for it and you’ll find
+    plenty of documents!
+-   You can get road volume data from DfT
+-   Have a read and a play and let us know how you get on in the [issue
+    tracker](https://github.com/Robinlovelace/sheffield_cycle_data/issues)
